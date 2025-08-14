@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+requests
+beautifulsoup4
+PyPDF2
+python-docx
+odfpy
+elasticsearch
+jieba
+opencc
+sentence-tranformers
+certifi
