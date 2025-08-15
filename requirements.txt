@@ -7,6 +7,6 @@ python-docx
 odfpy
 elasticsearch
 jieba
-opencc
-sentence-tranformers
+opencc-python-reimplemented
+sentence-transformers
 certifi
