@@ -1,3 +1,4 @@
+from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import logging
 from fastapi import FastAPI, Query, BackgroundTasks
@@ -13,10 +14,20 @@ from rag import (
 
 app = FastAPI(title="SCU 秘書室 API", version="1.0")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("startup")
 
 # 背景初始化任務
+
+
 async def init_data():
     logger.info("🚀 背景初始化資料中...")
     await asyncio.to_thread(download_files)
@@ -26,6 +37,7 @@ async def init_data():
     await asyncio.to_thread(embed_and_index)
     logger.info("✅ 資料初始化完成！")
 
+
 @app.on_event("startup")
 async def startup_event():
     # 在背景啟動，不阻塞 FastAPI 啟動
@@ -33,11 +45,14 @@ async def startup_event():
     logger.info("FastAPI 已啟動，資料初始化在背景進行")
 
 # 查詢參數資料結構
+
+
 class SearchResponse(BaseModel):
     question: str
     answer: str
     top_context: str
     summarized_context: str
+
 
 @app.get("/search", response_model=SearchResponse)
 def search(question: str = Query(..., description="要詢問的問題")):
@@ -62,9 +77,9 @@ def search(question: str = Query(..., description="要詢問的問題")):
         "summarized_context": summarized_context
     }
 
+
 @app.post("/reload")
 def reload_data(background_tasks: BackgroundTasks):
     """重新抓取資料與建立索引（背景執行）"""
     background_tasks.add_task(init_data)
     return {"status": "資料重新載入已開始，請稍後"}
-
